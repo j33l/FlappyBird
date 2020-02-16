@@ -36,13 +36,27 @@ var gravity = 1.3;
 
 var score = 0;
 
-// on key down
-document.addEventListener("keydown", moveUp);
+var playing = false;
 
-function moveUp() {
-    yBird -= 25;
-    birdFly.play();
-}
+// on key press
+document.addEventListener("keydown", () => {
+    var x = event.which || event.keyCode;
+    
+    if(x == 32) { // space -> fly
+        yBird -= 25;
+        birdFly.play();
+    }
+
+    if(x == 13) { // enter -> start playing
+        playing = true;
+        draw();
+    }
+
+    if(x == 27) { // escape -> stop game
+        playing = false
+        mainScreen()
+    }
+})
 
 // pipe coordinates
 var pipes = [];
@@ -51,6 +65,26 @@ pipes[0] = { // initial pipes
     x : canvas.width,
     y : 0
 };
+
+// main screen
+function mainScreen() {
+
+    contex.clearRect(0, 0, canvas.width, canvas.height)
+
+    contex.fillStyle = "#000";
+    contex.font = "50px Arial";
+    contex.fillText("Flappy Bird", 15, 100);
+
+    contex.beginPath();
+    contex.arc(137, 264, 50, 0, 2 * Math.PI);
+    contex.stroke();
+
+    contex.fillStyle = "#000";
+    contex.font = "20px Arial";
+    contex.fillText("Score : " + score , 10, canvas.height-20);
+}
+
+mainScreen()
 
 // draw images
 function draw() {
@@ -111,7 +145,7 @@ function draw() {
     contex.font = "20px Arial";
     contex.fillText("Score : " + score , 10, canvas.height-20);
     
-    // requestAnimationFrame(draw);
+    playing ? requestAnimationFrame(draw) : mainScreen()
 }
 
-draw(); // draw animation loop
+// draw(); // draw game animation loop
